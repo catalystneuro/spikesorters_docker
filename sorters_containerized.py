@@ -2,79 +2,57 @@ from pathlib import Path
 import random
 import hither
 import time
-import numpy as np
-
 import spikesorters as ss
 import spikeextractors as se
 
 container_folder = Path(__file__).parent / "containers"
 
-if HAVE_HITHER:
-    @hither.function('klusta', '0.1.0', container='docker://alejoe91/klusta-0.1.0')
-    def klusta(
-            recording_json, **kwargs
-    ):
-        recording = se.load_extractor_from_json(recording_json)
-        # run sorter
-        t_start = time.time()
-        sorting = ss.run_klusta(recording, **kwargs)
-        t_stop = time.time()
-        print('KLUSTA run time {:.3f}s'.format(t_stop - t_start))
-        output_folder = Path(kwargs['output_folder'])
-        sorting.dump_to_json(output_folder / 'sorting_output.json')
+
+@hither.function('klusta', '0.1.0', container='docker://alejoe91/klusta-0.1.0')
+def klusta(
+        recording_json, **kwargs
+):
+    recording = se.load_extractor_from_json(recording_json)
+    # run sorter
+    t_start = time.time()
+    sorting = ss.run_klusta(recording, **kwargs)
+    t_stop = time.time()
+    print('KLUSTA run time {:.3f}s'.format(t_stop - t_start))
+    output_folder = Path(kwargs['output_folder'])
+    sorting.dump_to_json(output_folder / 'sorting_output.json')
 
 
-    @hither.function('herdingspikes', '0.1.0')
-    def herdingspikes(
-            recording_json, **kwargs
-    ):
-        recording = se.load_extractor_from_json(recording_json)
-        # run sorter
-        t_start = time.time()
-        sorting = ss.run_herdingspikes(recording, **kwargs)
-        t_stop = time.time()
-        print('HERDINGSPIKES run time {:.3f}s'.format(t_stop - t_start))
-        output_folder = Path(kwargs['output_folder'])
-        sorting.dump_to_json(output_folder / 'sorting_output.json')
+@hither.function('herdingspikes', '0.1.0', container='docker://alejoe91/herdingspikes-0.1.0')
+def herdingspikes(
+        recording_json, **kwargs
+):
+    recording = se.load_extractor_from_json(recording_json)
+    # run sorter
+    t_start = time.time()
+    sorting = ss.run_herdingspikes(recording, **kwargs)
+    t_stop = time.time()
+    print('HERDINGSPIKES run time {:.3f}s'.format(t_stop - t_start))
+    output_folder = Path(kwargs['output_folder'])
+    sorting.dump_to_json(output_folder / 'sorting_output.json')
 
 
-    @hither.function('mountainsort4', '0.1.0', container='docker://alejoe91/mountainsort4-0.1.0')
-    def mountainsort4(
-            recording_json, **kwargs
-    ):
-        recording = se.load_extractor_from_json(recording_json)
-        # run sorter
-        t_start = time.time()
-        sorting = ss.run_mountainsort4(recording, **kwargs)
-        t_stop = time.time()
-        print('MS4 run time {:.3f}s'.format(t_stop - t_start))
-        output_folder = Path(kwargs['output_folder'])
-        sorting.dump_to_json(output_folder / 'sorting_output.json')
-
-
-    @hither.function('run_sorter', '0.1.0')
-    def run_sorter_hither(
-            recording_json, sorter_name, **kwargs
-    ):
-        recording = se.load_extractor_from_json(recording_json)
-        # run sorter
-        t_start = time.time()
-        sorting = ss.run_sorter(sorter_name, recording, **kwargs)
-        t_stop = time.time()
-        print(f'{sorter_name} run time {np.round(t_stop - t_start, 3)}')
-        output_folder = Path(kwargs['output_folder'])
-        sorting.dump_to_json(output_folder / 'sorting_output.json')
-
-
-
-_default_containers = {
-    "klusta": "docker://alejoe91/klusta-0.1.0"
-}
+@hither.function('mountainsort4', '0.1.0', container='docker://alejoe91/mountainsort4-0.1.0')
+def mountainsort4(
+        recording_json, **kwargs
+):
+    recording = se.load_extractor_from_json(recording_json)
+    # run sorter
+    t_start = time.time()
+    sorting = ss.run_mountainsort4(recording, **kwargs)
+    t_stop = time.time()
+    print('MS4 run time {:.3f}s'.format(t_stop - t_start))
+    output_folder = Path(kwargs['output_folder'])
+    sorting.dump_to_json(output_folder / 'sorting_output.json')
 
 
 def run_sorter(_sorter_function, recording, output_folder, delete_output_folder=False,
                grouping_property=None, parallel=False, verbose=False, raise_error=True, n_jobs=-1,
-               joblib_backend='loky', run_in_docker=True, container=None,
+               joblib_backend='loky',
                **params):
     output_folder = Path(output_folder)
     recording_json = output_folder / "recording_input.json"
@@ -82,8 +60,6 @@ def run_sorter(_sorter_function, recording, output_folder, delete_output_folder=
 
     # dumo recording
     recording.dump_to_json(output_folder / "recording_input.json")
-
-    # retrieve container
 
     sorting_job = _sorter_function.run(recording_json=recording_json, output_folder=output_folder,
                                        delete_output_folder=delete_output_folder,
