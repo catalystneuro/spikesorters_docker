@@ -1,28 +1,6 @@
-FROM ubuntu:20.04
-
-#########################################
-### Python
-RUN apt-get update && apt-get -y install git wget build-essential
-RUN apt-get install -y python3 python3-pip
-RUN ln -s python3 /usr/bin/python
-RUN ln -s pip3 /usr/bin/pip
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python3-tk
-
-#########################################
-### Numpy
-RUN pip install numpy
-
-#########################################
-### Make sure we have python3 and a working locale
-RUN rm /usr/bin/python && ln -s python3 /usr/bin/python && rm /usr/bin/pip && ln -s pip3 /usr/bin/pip
-ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
-RUN apt-get install -y locales && locale-gen en_US.UTF-8
+FROM spikeinterface/si-0.12.0-ubuntu20.04:0.1.0
 
 #########################################
 ### Herding spikes 2
 RUN pip install --upgrade herdingspikes
 RUN pip install joblib
-
-# python packages
-RUN pip install spikeextractors==0.9.6 spiketoolkit==0.7.5 spikesorters==0.4.4
-RUN pip install --upgrade kachery==0.6.7
