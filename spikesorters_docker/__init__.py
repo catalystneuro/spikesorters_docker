@@ -1,2 +1,2 @@
-from .sorters_containerized import run_sorter, run_mountainsort4, run_klusta
+from .sorters_containerized import run_sorter_docker, run_mountainsort4, run_klusta, run_spykingcircus
 from .default_docker_images import default_docker_images

@@ -1,4 +1,6 @@
-FROM spikeinterface/mountainsort4-base:1.0.0
+FROM spikeinterface/spyking-circus-base:1.0.7
+
+RUN pip install simplejson requests click
 
 #########################################
 ### SpikeInterface
